@@ -12,6 +12,8 @@ from time import sleep
 
 Window.size = (1400, 700)
 
+ChromeDriverPath = 'Drivers\chromedriver.exe'
+
 code='''
 ScreenManager:
 	MainScreen:
@@ -523,7 +525,7 @@ class MainScreen(Screen):
         for row in win:
             if self.spam.active:
                 if len(row)==2:
-                    driver = webdriver.Chrome('C:/Drivers/WebDriver/chromedriver.exe') #Drive_Address
+                    driver = webdriver.Chrome(ChromeDriverPath) #Drive_Address
                     driver.get(f'https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&ct=1653476060&rver=7.0.6737.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26RpsCsrfState%3ded19b33f-25c3-b2f9-7ec9-4a74b91fdab7&id=292841&aadredir=1&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=90015')
                     sleep(2)
 
@@ -573,7 +575,7 @@ class MainScreen(Screen):
                     PROXY = row[2]
                     chrome_options = webdriver.ChromeOptions()
                     chrome_options.add_argument('--proxy-server=%s' % PROXY)
-                    driver = webdriver.Chrome('C:/Drivers/WebDriver/chromedriver.exe', options=chrome_options) #Drive_Address
+                    driver = webdriver.Chrome(ChromeDriverPath, options=chrome_options) #Drive_Address
                     driver.get(f'https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&ct=1653476060&rver=7.0.6737.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26RpsCsrfState%3ded19b33f-25c3-b2f9-7ec9-4a74b91fdab7&id=292841&aadredir=1&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=90015')
                     sleep(2)
 
@@ -622,7 +624,7 @@ class MainScreen(Screen):
             elif self.inbox.active:
                 if len(row)==2:
                     print(row)
-                    driver = webdriver.Chrome('C:/Drivers/WebDriver/chromedriver.exe') #Drive_Address
+                    driver = webdriver.Chrome(ChromeDriverPath) #Drive_Address
                     driver.get(f'https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&ct=1653476060&rver=7.0.6737.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26RpsCsrfState%3ded19b33f-25c3-b2f9-7ec9-4a74b91fdab7&id=292841&aadredir=1&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=90015')
                     sleep(2)
 
@@ -670,7 +672,7 @@ class MainScreen(Screen):
                 elif len(row)>=3:
                     chrome_options = webdriver.ChromeOptions()
                     chrome_options.add_argument('--proxy-server=%s' % row[2].strip())
-                    driver = webdriver.Chrome('C:/Drivers/WebDriver/chromedriver.exe', options=chrome_options) #Drive_Address
+                    driver = webdriver.Chrome(ChromeDriverPath, options=chrome_options) #Drive_Address
                     driver.get(f'https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&ct=1653476060&rver=7.0.6737.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26RpsCsrfState%3ded19b33f-25c3-b2f9-7ec9-4a74b91fdab7&id=292841&aadredir=1&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=90015')
                     sleep(2)
 
