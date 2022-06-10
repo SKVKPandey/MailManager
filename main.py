@@ -7,8 +7,9 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from selenium import webdriver
 from pyautogui import press
-from _thread import start_new_thread
+from itertools import islice
 from time import sleep
+import concurrent.futures
 
 Window.size = (1400, 700)
 
@@ -21,12 +22,19 @@ ScreenManager:
 <MainScreen>:
 	
 	name:'main'
+    report:report
     spam:spam
     inbox:inbox
     data:data
     win:win
     openspam:openspam
     openinbox:openinbox
+    spamnoaction:spamnoaction
+    spamflag:spamflag
+    spamread:spamread
+    inboxnoaction:inboxnoaction
+    inboxflag:inboxflag
+    inboxpin:inboxpin
 	
 	MDNavigationLayout:
 
@@ -68,6 +76,7 @@ ScreenManager:
                                 cols: 2
 
                                 MDCheckbox:
+                                    id: report
 
                                 MDLabel:
                                     text: "Reporting"
@@ -234,6 +243,7 @@ ScreenManager:
                                             cols: 2
 
                                             MDCheckbox:
+                                                id: spamnoaction
 
                                             MDLabel:
                                                 text: "No Action"
@@ -246,6 +256,7 @@ ScreenManager:
                                             cols: 2
 
                                             MDCheckbox:
+                                                id: spamflag
 
                                             MDLabel:
                                                 text: "Add Flag"
@@ -306,6 +317,7 @@ ScreenManager:
                                             cols: 2
 
                                             MDCheckbox:
+                                                id: spamread
 
                                             MDLabel:
                                                 text: "Mark Read"
@@ -364,6 +376,7 @@ ScreenManager:
                                             cols: 2
 
                                             MDCheckbox:
+                                                id: inboxnoaction
 
                                             MDLabel:
                                                 text: "No Action"
@@ -376,6 +389,7 @@ ScreenManager:
                                             cols: 2
 
                                             MDCheckbox:
+                                                id: inboxflag
 
                                             MDLabel:
                                                 text: "Add Flag"
@@ -451,6 +465,7 @@ ScreenManager:
                                             cols: 2
 
                                             MDCheckbox:
+                                                id: inboxpin
 
                                             MDLabel:
                                                 text: "Pin"
@@ -477,7 +492,7 @@ ScreenManager:
 
                             MDTextFieldRect:
                                 id: data
-                                hint_text: "Email ID (Required); Password(required); Proxy IP"
+                                hint_text: "Email ID (Required); Password(required); Proxy IP:Port"
                                 required: True
                                 multiline: True
                                 size_hint: 0.4, None
@@ -561,11 +576,80 @@ class MainScreen(Screen):
                                 submit = driver.find_element_by_xpath("//div[@role='option']").click()
                                 sleep(4)
 
-                                submit = driver.find_element_by_xpath(f'//*[@id="ReadingPaneContainerId"]/div/div/div/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/div[2]/span[2]').click()
-                                sleep(4)
+                                if self.spamnoaction.active:
 
-                                press('enter')
-                                sleep(2)
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                elif self.spamread.active and self.spamflag.active:
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button').click()
+                                    sleep(4)
+
+                                    for _ in range(2):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    for _ in range(3):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="ReadingPaneContainerId"]/div/div/div/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/div[2]/span[2]').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                elif self.spamread.active:
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button').click()
+                                    sleep(4)
+
+                                    for _ in range(2):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                elif self.spamflag.active:
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button').click()
+                                    sleep(4)
+
+                                    for _ in range(3):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                else:
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
 
                             except Exception as e:
                                 print(e)
@@ -611,11 +695,80 @@ class MainScreen(Screen):
                                 submit = driver.find_element_by_xpath("//div[@role='option']").click()
                                 sleep(4)
 
-                                submit = driver.find_element_by_xpath(f'//*[@id="ReadingPaneContainerId"]/div/div/div/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/div[2]/span[2]').click()
-                                sleep(4)
+                                if self.spamnoaction.active:
 
-                                press('enter')
-                                sleep(2)
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                elif self.spamread.active and self.spamflag.active:
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button').click()
+                                    sleep(4)
+
+                                    for _ in range(2):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    for _ in range(3):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="ReadingPaneContainerId"]/div/div/div/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/div[2]/span[2]').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                elif self.spamread.active:
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button').click()
+                                    sleep(4)
+
+                                    for _ in range(2):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                elif self.spamflag.active:
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button').click()
+                                    sleep(4)
+
+                                    for _ in range(3):
+                                        press('down')
+                                    press('enter')
+                                    sleep(3)
+                                    
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
+
+                                else:
+                                    submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[4]/button/span').click()
+                                    sleep(4)
+
+                                    press('enter')
+                                    sleep(2)
+                                    continue
 
                             except Exception as e:
                                 print(e)
@@ -658,12 +811,81 @@ class MainScreen(Screen):
                             submit = driver.find_element_by_xpath("//div[@role='option']").click()
                             sleep(4)
 
-                            submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
-                            sleep(2)
-                        
-                            press('down')
-                            press('enter')
-                            sleep(2)
+                            if self.inboxnoaction.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            elif self.inboxflag.active and self.inboxpin.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(4):
+                                    press('down')
+                                press('enter')
+                                sleep(2)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(5):
+                                    press('down')
+                                press('enter')
+                                sleep(3)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            elif self.inboxflag.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(4):
+                                    press('down')
+                                press('enter')
+                                sleep(3)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            elif self.inboxpin.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(5):
+                                    press('down')
+                                press('enter')
+                                sleep(3)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            else:
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
 
                         except Exception as e:
                             print(e)
@@ -706,30 +928,98 @@ class MainScreen(Screen):
                             submit = driver.find_element_by_xpath("//div[@role='option']").click()
                             sleep(4)
 
-                            submit = driver.find_element_by_xpath(f'//*[@id="ReadingPaneContainerId"]/div/div/div/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/div[2]/span[2]').click()
-                            sleep(4)
+                            if self.inboxnoaction.active:
 
-                            press('enter')
-                            sleep(2)
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            elif self.inboxflag.active and self.inboxpin.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(4):
+                                    press('down')
+                                press('enter')
+                                sleep(2)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(5):
+                                    press('down')
+                                press('enter')
+                                sleep(3)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            elif self.inboxflag.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(4):
+                                    press('down')
+                                press('enter')
+                                sleep(3)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            elif self.inboxpin.active:
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[9]/button/span').click()
+                                sleep(4)
+
+                                for _ in range(5):
+                                    press('down')
+                                press('enter')
+                                sleep(3)
+
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
+
+                            else:
+                                submit = driver.find_element_by_xpath(f'//*[@id="app"]/div/div[2]/div[2]/div[1]/div/div/div/div/div/div[1]/div[5]/button/span/i[2]').click()
+                                sleep(2)
+                            
+                                press('down')
+                                press('enter')
+                                sleep(2)
 
                         except Exception as e:
                             print(e)
                             break
 
-    
     def start(self):
-        data_list = [tuple(x.split(';')) for x in self.data.text.split('\n')]
+        data_list = [tuple(x.split(',')) for x in self.data.text.split('\n')]
         win_sequence =[]
         win_n = int(self.win.text.strip())
 
-        for i in range(win_n, len(data_list), win_n):
-            win_sequence.append(data_list[i-win_n:i])
-        win_sequence.append(data_list[-(len(data_list)%win_n):])
+        data_list_iter = iter(data_list)
+        win_sequence = [list(islice(data_list_iter, enum)) for enum in [len(data_list)//win_n,]*(win_n+1)]
 
-        for win in win_sequence:
-            start_new_thread(self.winGenerator, (win,))
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(self.winGenerator, win_sequence)
 
-            
+
 sm = ScreenManager()
 sm.add_widget(MainScreen(name = 'main'))
 
