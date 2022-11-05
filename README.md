@@ -20,7 +20,7 @@ Mail Manager is an application for automating mail functions. The application ca
 Clone the project
 
 ```bash
-  git clone https://github.com/SKVKPandey/ColorWheel.git
+  git clone https://github.com/SKVKPandey/MailManager.git
 ```
 
 Go to the project directory
